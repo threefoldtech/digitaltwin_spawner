@@ -15,6 +15,7 @@ export const initDocker = async () => {
 export const spawnDocker = async (userId: string) => {
     const volumeName = `browser_storage${userId}`;
 
+
     try {
         await docker.createVolume({
             name: volumeName,
