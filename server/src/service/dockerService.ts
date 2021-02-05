@@ -4,8 +4,11 @@ import Dockerode from "dockerode";
 
 const docker = new Dockerode({socketPath: '/var/run/docker.sock'});
 
+const image = 'jimbersoftware/chat:0.5';
+
+
 export const initDocker = async () => {
-    await docker.pull('jimbersoftware/chat:0.4')
+    await docker.pull(image)
     const networks = await docker.listNetworks()
     if (!networks.find(n => n.Name === "chatnet")) {
         await docker.createNetwork({Name: 'chatnet'})
@@ -26,7 +29,7 @@ export const spawnDocker = async (userId: string) => {
     }
 
     const options: Dockerode.ContainerCreateOptions = {
-        Image: 'jimbersoftware/chat:0.4',
+        Image: image,
         Tty: true,
         name: `${userId}-chat`,
         HostConfig: {
@@ -45,3 +48,13 @@ export const spawnDocker = async (userId: string) => {
         throw new Error('createError')
     }
 };
+
+export const fetchChatList = async () => {
+    const containers: Dockerode.ContainerInfo[] = await docker.listContainers()
+    return containers
+        .map((container: Dockerode.ContainerInfo) => container?.Names[0])
+        .filter(containerName => containerName.indexOf("-chat") !== -1)
+        .map(n => n.replace('-chat', ''))
+        .map(n => n.replace('/', ''))
+        .map(n => n.trim() )
+}

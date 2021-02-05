@@ -4,8 +4,10 @@ import {logger} from "./logger";
 // eslint-disable-next-line @typescript-eslint/naming-convention
 import session from "express-session";
 import {router as authRouter} from "./routers/auth";
+import {router as listRouter} from "./routers/list";
 import {router as spawnRouter} from "./routers/spawn";
 import {initDocker} from "./service/dockerService";
+import cors, {CorsOptions} from "cors"
 
 
 const init = async () => {
@@ -36,14 +38,23 @@ const init = async () => {
         }
     }));
 
+    const corsOptions: CorsOptions = {
+        origin: '*',
+        optionsSuccessStatus: 200
+    };
+
+
+    app.use(cors(corsOptions))
+
 
     await initDocker()
     app.use("/api/v1", spawnRouter)
 
     app.use('/api/v1/auth', authRouter)
+    app.use('/api/v1/list', listRouter)
 
-    app.listen(8080, () => {
-        logger.info(`server started at http://localhost:8080`);
+    app.listen((9000), () => {
+        logger.info(`server started at http://localhost:9000`);
     });
 
 }
