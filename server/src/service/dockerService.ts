@@ -16,7 +16,12 @@ export const initDocker = async () => {
 
 export const spawnDocker = async (userId: string) => {
     const volumeName = `chat_storage_${userId}`;
-
+    const containerName = `${userId}-chat`;
+    const containerList = await docker.listContainers()
+    if (containerList.find(c => c.Names.includes(containerName)))
+    {
+        return;
+    }
 
     try {
         const list = await docker.listVolumes()
@@ -33,7 +38,7 @@ export const spawnDocker = async (userId: string) => {
     const options: Dockerode.ContainerCreateOptions = {
         Image: image,
         Tty: true,
-        name: `${userId}-chat`,
+        name: containerName,
         HostConfig: {
             AutoRemove: true,
             NetworkMode: 'chatnet',
@@ -47,7 +52,6 @@ export const spawnDocker = async (userId: string) => {
     } catch (err) {
         logger.error('error', {err})
         throw err
-        throw new Error('createError')
     }
 };
 
