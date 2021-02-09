@@ -19,6 +19,7 @@ services:
       - ./proxy/certs:/etc/nginx/certs
     ports:
       - 443:443
+      - 80:80
     networks:
       - chatnet
 
