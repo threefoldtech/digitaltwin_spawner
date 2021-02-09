@@ -8,7 +8,6 @@ const image = 'jimbersoftware/chat:0.5';
 
 
 export const initDocker = async () => {
-    await docker.pull(image)
     const networks = await docker.listNetworks()
     if (!networks.find(n => n.Name === "chatnet")) {
         await docker.createNetwork({Name: 'chatnet'})
@@ -16,14 +15,17 @@ export const initDocker = async () => {
 }
 
 export const spawnDocker = async (userId: string) => {
-    const volumeName = `browser_storage${userId}`;
+    const volumeName = `chat_storage_${userId}`;
 
 
     try {
-        await docker.createVolume({
-            name: volumeName,
-            labels: {'jimber': 'volume'}
-        })
+        const list = await docker.listVolumes()
+        if (!list.Volumes.find(v => v.Name === volumeName)) {
+            await docker.createVolume({
+                name: volumeName,
+                labels: {'chat': 'volume'}
+            })
+        }
     } catch (e) {
         throw new Error('volumeError')
     }
@@ -35,7 +37,7 @@ export const spawnDocker = async (userId: string) => {
         HostConfig: {
             AutoRemove: true,
             NetworkMode: 'chatnet',
-            Binds: [`${volumeName}:/root/.local/share/browser/QtWebEngine/Default`],
+            Binds: [`${volumeName}:/appdata`],
         },
         Env: [`USER_ID=${userId}`],
     };
@@ -56,5 +58,5 @@ export const fetchChatList = async () => {
         .filter(containerName => containerName.indexOf("-chat") !== -1)
         .map(n => n.replace('-chat', ''))
         .map(n => n.replace('/', ''))
-        .map(n => n.trim() )
+        .map(n => n.trim())
 }
