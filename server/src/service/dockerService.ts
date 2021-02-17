@@ -44,7 +44,7 @@ export const spawnDocker = async (userId: string) => {
             NetworkMode: 'chatnet',
             Binds: [`${volumeName}:/appdata`],
         },
-        Env: [`USER_ID=${userId}`],
+        Env: [`USER_ID=${userId}`,`DIGITALTWIN_APPID=digitaltwin-test.jimbertesting.be`],
     };
     try {
         const container = await docker.createContainer(options);
