@@ -1,10 +1,9 @@
 import {logger} from "../logger";
 import Dockerode from "dockerode";
+import * as fs from "fs";
 
 
 const docker = new Dockerode({socketPath: '/var/run/docker.sock'});
-
-const image = 'jimbersoftware/chat:0.5';
 
 
 export const initDocker = async () => {
@@ -13,6 +12,16 @@ export const initDocker = async () => {
         await docker.createNetwork({Name: 'chatnet'})
     }
 }
+
+const getImage = () => {
+    try {
+        const image = fs.readFileSync('/config/version.txt').toString();
+        return image.trim()
+    } catch (err) {
+        return 'jimbersoftware/chat:0.5';
+    }
+
+};
 
 export const spawnDocker = async (userId: string) => {
     const volumeName = `chat_storage_${userId}`;
@@ -35,6 +44,10 @@ export const spawnDocker = async (userId: string) => {
         throw new Error('volumeError')
     }
 
+    let image = getImage()
+
+
+    logger.info(`spawn: ${image}`)
     const options: Dockerode.ContainerCreateOptions = {
         Image: image,
         Tty: true,
