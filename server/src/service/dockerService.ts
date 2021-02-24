@@ -4,7 +4,7 @@ import Dockerode from "dockerode";
 
 const docker = new Dockerode({socketPath: '/var/run/docker.sock'});
 
-const image = 'jimbersoftware/chat:0.5';
+const image = 'jimbersoftware/chat:yggdrasil';
 
 
 export const initDocker = async () => {
@@ -42,6 +42,9 @@ export const spawnDocker = async (userId: string) => {
         HostConfig: {
             AutoRemove: true,
             NetworkMode: 'chatnet',
+            Sysctls: {'net.ipv6.conf.all.disable_ipv6':'0'},
+            CapAdd:'NET_ADMIN',
+            Devices: ['/dev/net/tun'],
             Binds: [`${volumeName}:/appdata`],
         },
         Env: [`USER_ID=${userId}`],
