@@ -27,8 +27,7 @@ export const spawnDocker = async (userId: string) => {
     const volumeName = `chat_storage_${userId}`;
     const containerName = `${userId}-chat`;
     const containerList = await docker.listContainers()
-    if (containerList.find(c => c.Names.includes(containerName)))
-    {
+    if (containerList.find(c => c.Names.includes(containerName))) {
         return;
     }
 
@@ -44,9 +43,19 @@ export const spawnDocker = async (userId: string) => {
         throw new Error('volumeError')
     }
 
-    let image = getImage()
+    const containerAlreadyRunningPromise = new Promise((resolve) => {
+        docker.listContainers((err, containers) => {
+            resolve(!!containers.find(c => c.Names.includes(`/${containerName}`)))
+        });
+    })
 
 
+    const containerAlreadyRunning = await containerAlreadyRunningPromise;
+    if (containerAlreadyRunning) {
+        return
+    }
+
+    const image = getImage()
     logger.info(`spawn: ${image}`)
     const options: Dockerode.ContainerCreateOptions = {
         Image: image,
