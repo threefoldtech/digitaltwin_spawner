@@ -10,8 +10,6 @@ router.get("/", async (request, respose) => {
     const yggdrasilAddress = await axios.get(
       `http://${digitaltwin}-chat/api/yggdrasil_address`
     );
-    console.log(digitaltwin);
-    console.log(yggdrasilAddress.data);
     return {
       id: digitaltwin,
       location: yggdrasilAddress.data,
