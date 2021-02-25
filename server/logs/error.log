@@ -1,4 +1,0 @@
-{"message":"test","level":"info"}
-{"statusCode":400,"json":{"message":"got EOF while reading request body"},"level":"error"}
-{"statusCode":400,"json":{"message":"got EOF while reading request body"},"level":"error"}
-{"err":{"statusCode":400,"json":{"message":"got EOF while reading request body"}},"level":"error","message":"error"}
