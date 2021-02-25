@@ -1,5 +1,5 @@
 import {logger} from "../logger";
-import Dockerode from "dockerode";
+import Dockerode, { DeviceMapping } from "dockerode";
 
 
 const docker = new Dockerode({socketPath: '/var/run/docker.sock'});
@@ -44,7 +44,10 @@ export const spawnDocker = async (userId: string) => {
             NetworkMode: 'chatnet',
             Sysctls: {'net.ipv6.conf.all.disable_ipv6':'0'},
             CapAdd:'NET_ADMIN',
-            Devices: ['/dev/net/tun'],
+            Devices: <DeviceMapping[]> [{
+                PathOnHost: '/dev/net/tun',
+                PathInContainer: ''
+            }],
             Binds: [`${volumeName}:/appdata`],
         },
         Env: [`USER_ID=${userId}`],
