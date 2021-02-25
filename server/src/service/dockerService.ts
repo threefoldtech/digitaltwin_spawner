@@ -5,8 +5,6 @@ import * as fs from "fs";
 
 const docker = new Dockerode({socketPath: '/var/run/docker.sock'});
 
-const image = 'jimbersoftware/chat:yggdrasil';
-
 
 export const initDocker = async () => {
     const networks = await docker.listNetworks()
@@ -20,7 +18,7 @@ const getImage = () => {
         const image = fs.readFileSync('/config/version.txt').toString();
         return image.trim()
     } catch (err) {
-        return 'jimbersoftware/chat:0.5';
+        return 'jimbersoftware/chat:yggdrasil';
     }
 
 };
@@ -70,7 +68,8 @@ export const spawnDocker = async (userId: string) => {
             CapAdd:'NET_ADMIN',
             Devices: <DeviceMapping[]> [{
                 PathOnHost: '/dev/net/tun',
-                PathInContainer: ''
+                PathInContainer: '/dev/net/tun',
+                CgroupPermissions: 'rwm'
             }],
             Binds: [`${volumeName}:/appdata`],
         },
