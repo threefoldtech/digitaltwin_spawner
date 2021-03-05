@@ -18,7 +18,7 @@ const getImage = () => {
         const image = fs.readFileSync('/config/version.txt').toString();
         return image.trim()
     } catch (err) {
-        return 'jimbersoftware/chat:yggdrasil';
+        return 'jimbersoftware/chat:0.6';
     }
 
 };
